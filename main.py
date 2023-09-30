@@ -23,7 +23,8 @@ def validate_one(input, target, model):
     with torch.no_grad():
         output = model(input)
         prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
-
+    print("target", target)
+    print("output", output.data)
     print("Verifier accuracy: ", prec1.item())
 
 

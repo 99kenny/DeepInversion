@@ -164,7 +164,7 @@ class DeepInversion(object):
             skipFirst = False
         else:
             skipFirst = True
-            
+        print("targets", targets.item())
         iteration = 0
         for lr_it, lower_res in enumerate([2,1]):
             if lr_it == 0:
