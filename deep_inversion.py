@@ -291,7 +291,7 @@ class DeepInversion(object):
                 
                 if iteration % save_every == 0 and (save_every > 0):
                     vutils.save_image(inputs, 
-                                    '{}/best_images/output_{:0.5d}.png'.format(self.prefix, iteration // save_every),
+                                    '{}/best_images/output_{:05d}.png'.format(self.prefix, iteration // save_every),
                                     normalize = True, scale_each = True, nrow=int(10))
         
         if self.store_best_images:
