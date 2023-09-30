@@ -107,7 +107,7 @@ if __name__ == '__main__':
     parser.add_argument('--jitter', type=int, default=30, help='jitter')
     parser.add_argument('--teacher', type=str, default='resnet50', help='teacher model')
     parser.add_argument('--student', type=str, default='mobilenet_v2', help="student model")
-    parser.add_argument('--fp16', action='store_true', help='use FP16 for optimization')
+    parser.add_argument('--use_fp16', action='store_true', help='use FP16 for optimization')
     parser.add_argument('--exp_name', type=str, default='test', help='where to store experimental data')
     parser.add_argument('--do_flip', action='store_true', help='apply flip during model inversion')
     parser.add_argument('--random_label', action='store_true', help='generate random label')
