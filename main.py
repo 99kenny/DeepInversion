@@ -105,7 +105,7 @@ if __name__ == '__main__':
     parser.add_argument('--setting_id', type=int, default=0, help="multi resolution : 0, else")
     parser.add_argument('--bs', type=int, default=128, help='batch size')
     parser.add_argument('--jitter', type=int, default=30, help='jitter')
-    parser.add_argument('--arch_name', type=str, default='resnet50', help='teacher model')
+    parser.add_argument('--teacher', type=str, default='resnet50', help='teacher model')
     parser.add_argument('--student', type=str, default='mobilenet_v2', help="student model")
     parser.add_argument('--fp16', action='store_true', help='use FP16 for optimization')
     parser.add_argument('--exp_name', type=str, default='test', help='where to store experimental data')
