@@ -82,8 +82,10 @@ def run(args):
                   main_loss_multiplier=args.main_loss_multiplier,
                   adi_scale=args.adi_scale,
                 )
-
-    DeepInversionEngine.generate_batch(net_student=student)
+    targets = None
+    if args.targets is not None:
+        targets = [eval(i) for i in args.targets.split(',')]
+    DeepInversionEngine.generate_batch(net_student=student, targets=targets)
     
 def main():
     return 
@@ -115,7 +117,7 @@ if __name__ == '__main__':
     parser.add_argument('--seed', type=int, default=0, help='seed')
     parser.add_argument('--start_noise', type=bool, default=True)
     parser.add_argument('--image_resolution', type=int, default=224, help='image resolution')
-    
+    parser.add_argument('--targets', type=str, help='targets')
     args = parser.parse_args()
     print(args)
     
