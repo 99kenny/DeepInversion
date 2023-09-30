@@ -153,7 +153,7 @@ class DeepInversion(object):
         criterion = self.criterion
         image_resolution = self.image_resolution
         data_type = torch.half if use_fp16 else torch.float
-        inputs = torch.randn((self.bsm, 3, image_resolution, image_resolution), requires_grad=True, device='cuda', dtype=data_type)
+        inputs = torch.randn((self.bs, 3, image_resolution, image_resolution), requires_grad=True, device='cuda', dtype=data_type)
         pooling_function = nn.modules.pooling.AvgPool2d(kernel_size=2)
         
         if targets is None or self.random_label :
