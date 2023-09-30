@@ -229,7 +229,7 @@ class DeepInversion(object):
                 # feature distribution regularization
                 # alpha feature
                 rescale = [self.first_bn_multiplier] + [1. for _ in range(len(self.loss_r_feature_layers))]
-                print("rescale",rescale)
+
                 # R_{feature}
                 loss_r_feature = sum([mod.r_feature * rescale[idx] for (idx, mod) in enumerate(self.loss_r_feature_layers)])
                 
