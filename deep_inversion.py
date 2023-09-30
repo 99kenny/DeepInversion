@@ -125,7 +125,7 @@ class DeepInversion(object):
         self.hook_for_display = hook_for_display
     
     def save_images(self, images, targets):
-            # method to store generated images locally
+        # method to store generated images locally
         local_rank = torch.cuda.current_device()
         for id in range(images.shape[0]):
             class_id = targets[id].item()
@@ -229,6 +229,7 @@ class DeepInversion(object):
                 # feature distribution regularization
                 # alpha feature
                 rescale = [self.first_bn_multiplier] + [1. for _ in range(len(self.loss_r_feature_layers))]
+                print("rescale",rescale)
                 # R_{feature}
                 loss_r_feature = sum([mod.r_feature * rescale[idx] for (idx, mod) in enumerate(self.loss_r_feature_layers)])
                 
@@ -264,7 +265,9 @@ class DeepInversion(object):
                     self.l2_scale * loss_l2 + \
                     self.adi_scale * loss_verifier_cig + \
                     self.main_loss_multiplier * loss   
-        
+                    
+                loss = loss_aux
+                
                 if iteration % save_every == 0:
                     print("------------iteration {}----------".format(iteration))
                     print("total loss", loss.item())
