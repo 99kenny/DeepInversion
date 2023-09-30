@@ -146,7 +146,6 @@ class DeepInversion(object):
     def get_images(self, net_student, targets):
         class_num = self.class_num
         net_teacher = self.net_teacher
-        net_student = self.net_student
         use_fp16 = self.use_fp16
         save_every = self.save_every
         kl_loss =nn.KLDivLoss(reduction='batchmean').cuda()
