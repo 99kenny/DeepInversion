@@ -3,6 +3,8 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 import torch.cuda.amp as amp
+import requests
+
 from models import vgg
 
 def validate_one(input, target, model):
@@ -35,6 +37,9 @@ def select_models(dataset, name):
         if name == 'vgg11_bn':
             features = [64, 64, 128, 128, 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M']
             model = vgg.VggNet(features)
+            url = "https://drive.google.com/file/d/1_kl1frLLHs8K9uU7Qmm38KBwslb6WOCU/view?usp=drive_link"
+            r = requests.get(url, allow_redirects=True)
+            open('./path/vgg.pth', 'wb').write(r.content)
             model.load_state_dict(torch.load('./path/vgg.pth'))
             
     else:
