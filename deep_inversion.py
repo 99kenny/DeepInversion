@@ -97,7 +97,7 @@ class DeepInversion(object):
         self.criterion = criterion
         do_clip = True
         # coefficients
-        self.bn_reg_feature = bn_reg_scale
+        self.bn_reg_scale = bn_reg_scale
         self.first_bn_multiplier = first_bn_multiplier
         self.var_scale_l1 = var_scale_l1
         self.var_scale_l2 = var_scale_l2
