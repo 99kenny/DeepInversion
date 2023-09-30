@@ -159,6 +159,8 @@ class DeepInversion(object):
         
         if targets is None or self.random_label :
             targets = torch.LongTensor([random.randint(0,class_num) for _ in range(self.bs)]).to('cuda')
+        else:
+            targets = torch.LongTensor(targets * (self.bs // len(targets)))
         # multi resolution
         if self.setting_id == 0:
             skipFirst = False
