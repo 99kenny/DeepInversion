@@ -307,7 +307,7 @@ class DeepInversion(object):
         use_fp16 = self.use_fp16
         
         net_student.eval()
-        if targets==None:
+        if targets is not None:
             targets = torch.from_numpy(np.array(targets).squeeze).cuda()
         if use_fp16:
             targets = targets.half()
