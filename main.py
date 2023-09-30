@@ -81,6 +81,7 @@ def run(args):
                   lr=args.lr,
                   main_loss_multiplier=args.main_loss_multiplier,
                   adi_scale=args.adi_scale,
+                  setting_id=args.setting_id,
                 )
     targets = None
     if args.targets is not None:
