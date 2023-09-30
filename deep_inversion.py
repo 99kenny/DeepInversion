@@ -159,8 +159,7 @@ class DeepInversion(object):
         
         if targets is None or self.random_label :
             targets = torch.LongTensor([random.randint(0,class_num) for _ in range(self.bs)]).to('cuda')
-        else:
-            targets = torch.LongTensor(targets * (self.bs // len(targets))).to('cuda')
+
         # multi resolution
         if self.setting_id == 0:
             skipFirst = False
@@ -313,7 +312,7 @@ class DeepInversion(object):
         
         net_student.eval()
         if targets is not None:
-            targets = torch.from_numpy(np.array(targets).squeeze()).cuda()
+            targets = torch.from_numpy(np.array(targets * (self.bs // len(targets))).squeeze()).cuda()
         if use_fp16:
             targets = targets.half()
         
