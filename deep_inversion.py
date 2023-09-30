@@ -302,15 +302,16 @@ class DeepInversion(object):
         optimizer.state = collections.defaultdict(dict)
             
             
-    def generate_batch(self, net_student, targets):
+    def generate_batch(self, net_student, targets=None):
         net_teacher = self.net_teacher
         use_fp16 = self.use_fp16
         
         net_student.eval()
-        targets = torch.from_numpy(np.array(targets).squeeze).cuda()
+        if targets==None:
+            targets = torch.from_numpy(np.array(targets).squeeze).cuda()
         if use_fp16:
             targets = targets.half()
-            
+        
         self.get_images(net_student, targets)
         net_teacher.eval()
         self.num_generation += 1
