@@ -36,7 +36,7 @@ def get_image_prior_losses(inputs_jit):
 
 class DeepInversionFeatureHooK():
     def __init__(self, module):
-        self.hook = module.register_foward_hook(self.hook_fn)
+        self.hook = module.register_forward_hook(self.hook_fn)
     
     def hook_fn(self, module, input, output):
         nch = input[0].shape[1]
