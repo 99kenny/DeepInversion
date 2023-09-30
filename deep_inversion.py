@@ -132,11 +132,11 @@ class DeepInversion(object):
             if 0:
                 #save into separate folders
                 place_to_store = '{}/s{:03d}/img_{:05d}_id{:03d}_gpu_{}_2.jpg'.format(self.final_data_path, class_id,
-                                                                                          self.num_generations, id,
+                                                                                          self.num_generation, id,
                                                                                           local_rank)
             else:
                 place_to_store = '{}/img_s{:03d}_{:05d}_id{:03d}_gpu_{}_2.jpg'.format(self.final_data_path, class_id,
-                                                                                          self.num_generations, id,
+                                                                                          self.num_generation, id,
                                                                                           local_rank)
 
             image_np = images[id].data.cpu().numpy().transpose((1, 2, 0))

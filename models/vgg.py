@@ -18,7 +18,7 @@ class VggNet(nn.Module):
         )
 
         self.layers = [] # construct layers using 'features' paremeter
-        in_channels = 4
+        in_channels = 3
         for i in features:
             if i == 'M': #MaxPooling layer
                 self.layers += [nn.MaxPool2d(kernel_size=2, stride=2)]

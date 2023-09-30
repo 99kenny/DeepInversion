@@ -26,8 +26,6 @@ def validate_one(input, target, model):
     with torch.no_grad():
         output = model(input)
         prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
-    print("target", target)
-    print("output", output.data)
     print("Verifier accuracy: ", prec1.item())
 
 def select_models(dataset, name):
@@ -36,11 +34,9 @@ def select_models(dataset, name):
     elif dataset == 'CIFAR10':
         if name == 'vgg11_bn':
             features = [64, 64, 128, 128, 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M']
-            model = vgg.VggNet(features)
-            url = "https://drive.google.com/file/d/1_kl1frLLHs8K9uU7Qmm38KBwslb6WOCU/view?usp=drive_link"
-            r = requests.get(url, allow_redirects=True)
-            open('./path/vgg.pth', 'wb').write(r.content)
+            model = torch.nn.DataParallel(vgg.VggNet(features))
             model.load_state_dict(torch.load('./path/vgg.pth'))
+            
             
     else:
         raise ValueError('unknown dataset')
@@ -58,7 +54,7 @@ def run(args):
         teacher, _ = amp.initialize(teacher, [], opt_level='O2')
             
     print('loading torchvision model for student with the name {}'.format(args.student))
-    student = select_models(args.datase, args.student).to('cuda')
+    student = select_models(args.dataset, args.student).to('cuda')
     student.eval()
         
     if args.use_fp16:
@@ -138,7 +134,7 @@ if __name__ == '__main__':
     parser.add_argument('--start_noise', type=bool, default=True)
     parser.add_argument('--image_resolution', type=int, default=224, help='image resolution')
     parser.add_argument('--targets', type=str, help='targets')
-    parser.add_argument('--dataset', type=str, help='dataset')
+    parser.add_argument('--dataset', type=str, default='ImageNet', help='dataset')
     args = parser.parse_args()
     print(args)
     
