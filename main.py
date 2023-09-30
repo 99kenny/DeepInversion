@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 import torch.cuda.amp as amp
+from models import vgg
 
 def validate_one(input, target, model):
     def accuracy(output, target, topk=(1,)):
@@ -27,21 +28,34 @@ def validate_one(input, target, model):
     print("output", output.data)
     print("Verifier accuracy: ", prec1.item())
 
+def select_models(dataset, name):
+    if dataset == 'ImageNet':
+        model = models.__dict__[name](pretrained=True)
+    elif dataset == 'CIFAR10':
+        if name == 'vgg11_bn':
+            features = [64, 64, 128, 128, 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M']
+            model = vgg.VggNet(features)
+            model.load_state_dict(torch.load('./path/vgg.pth'))
+            
+    else:
+        raise ValueError('unknown dataset')
+    
+    return model
 
 def run(args):
     torch.manual_seed(args.seed)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     print('loading torchvision model for teacher with the name {}'.format(args.teacher))
-    teacher = models.__dict__[args.teacher](pretrained=True).to(device)
+    teacher = select_models(args.dataset, args.name).to('cuda')
     teacher.eval()
     if args.use_fp16:
         teacher, _ = amp.initialize(teacher, [], opt_level='O2')
-        
+            
     print('loading torchvision model for student with the name {}'.format(args.student))
-    student = models.__dict__[args.student]().to(device)
+    student = select_models(args.datase, args.name).to('cuda')
     student.eval()
-    
+        
     if args.use_fp16:
         student, _ = amp.initialize(student, [], opt_level='O2')
         student.to(device)
@@ -119,6 +133,7 @@ if __name__ == '__main__':
     parser.add_argument('--start_noise', type=bool, default=True)
     parser.add_argument('--image_resolution', type=int, default=224, help='image resolution')
     parser.add_argument('--targets', type=str, help='targets')
+    parser.add_argument('--dataset', type=str, help='dataset')
     args = parser.parse_args()
     print(args)
     
