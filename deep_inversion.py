@@ -157,7 +157,7 @@ class DeepInversion(object):
         pooling_function = nn.modules.pooling.AvgPool2d(kernel_size=2)
         
         if targets is None or self.random_label :
-            targets = torch.LongTensor([random.randint(0,class_num) for _ in range(self.bs)]).to('cuda')
+            targets = torch.LongTensor([random.randint(0,self.class_num) for _ in range(self.bs)]).to('cuda')
         # multi resolution
         if self.setting_id == 0:
             skipFirst = False
