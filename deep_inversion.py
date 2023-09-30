@@ -40,7 +40,7 @@ class DeepInversionFeatureHooK():
     
     def hook_fn(self, module, input, output):
         nch = input[0].shape[1]
-        mean = input[0].mean[[0,2,3]]
+        mean = input[0].mean([0,2,3])
         var = input[0].permute(1,0,2,3).contiguous().view([nch, -1]).var(1, unbiased=False)
         
         r_feature = torch.norm(module.running_var.data - var, 2) + torch.norm(module.running_mean.data - mean, 2)
@@ -157,7 +157,7 @@ class DeepInversion(object):
         pooling_function = nn.modules.pooling.AvgPool2d(kernel_size=2)
         
         if targets is None or self.random_label :
-            targets = torch.LongTensor([random.randint(0,self.class_num) for _ in range(self.bs)]).to('cuda')
+            targets = torch.LongTensor([random.randint(0,class_num) for _ in range(self.bs)]).to('cuda')
         # multi resolution
         if self.setting_id == 0:
             skipFirst = False
