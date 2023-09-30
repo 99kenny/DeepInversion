@@ -52,13 +52,13 @@ def run(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     print('loading torchvision model for teacher with the name {}'.format(args.teacher))
-    teacher = select_models(args.dataset, args.name).to('cuda')
+    teacher = select_models(args.dataset, args.teacher).to('cuda')
     teacher.eval()
     if args.use_fp16:
         teacher, _ = amp.initialize(teacher, [], opt_level='O2')
             
     print('loading torchvision model for student with the name {}'.format(args.student))
-    student = select_models(args.datase, args.name).to('cuda')
+    student = select_models(args.datase, args.student).to('cuda')
     student.eval()
         
     if args.use_fp16:
