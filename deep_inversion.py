@@ -110,6 +110,7 @@ class DeepInversion(object):
         self.final_data_path = final_data_path
         
         prefix = path
+        self.prefix = prefix
         
         create_folder(prefix)
         create_folder(prefix + "/best_images/")
