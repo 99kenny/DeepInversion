@@ -4,11 +4,11 @@ from PIL import Image
 from torchvision.transforms import ToTensor
 
 class DistilledDataset(Dataset):
-    def __init__(self, path, transfrom=None):
+    def __init__(self, path, transform=None):
         super().__init__()
         self.path = path
         self.data = []
-        self.transform = transfrom
+        self.transform = transform
         print('Loading distilled datasets from {} ...'.format(path))    
         for image in os.listdir(path):
             file = os.path.join(path, image)

@@ -10,12 +10,12 @@ class MultiLayerCNN(nn.Module):
         self.layers = []
         
         in_channel=3
-        for i in range(features):
+        for i in features:
             if i == 'M':
                 self.layers += [nn.MaxPool2d(kernel_size=2, stride=2)]
             else:
                 self.layers += [
-                    nn.Conv2d(in_channel, i, kernel_size=3),
+                    nn.Conv2d(in_channel, i, kernel_size=3, padding=1),
                     nn.BatchNorm2d(i),
                     nn.ReLU(inplace=True)
                 ]

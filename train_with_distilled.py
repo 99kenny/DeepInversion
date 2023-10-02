@@ -98,7 +98,7 @@ def accuracy(output, target, topk=(1,)):
         res.append(correct_k.mul_(100.0 / batch_size))
     return res
 
-def train_with_distilled(dataset_name, class_num, root, exp_name, model_name='vgg11_bn'):
+def train_with_distilled(dataset_name, class_num, root, exp_name, epochs, model_name='vgg11_bn'):
     # model
     if model_name == 'vgg11_bn':
         features = [64, 64, 128, 128, 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M']
@@ -137,7 +137,7 @@ def train_with_distilled(dataset_name, class_num, root, exp_name, model_name='vg
     
     # train
     model.cuda()
-    criterion = nn.CrossEntropy(label_smoothing=0).cuda()
+    criterion = nn.CrossEntropyLoss(label_smoothing=0).cuda()
     optimizer = torch.optim.SGD(model.parameters(), 0.1, momentum=0.9, weight_decay=5e-4)
     lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100, eta_min=0)
     
@@ -158,12 +158,12 @@ if __name__ == '__main__':
     
     parser.add_argument('--epochs', type=int, default=10, help='epochs')
     parser.add_argument('--dataset', type=str, default='CIFAR10', help='dataset')
-    parser.add_argument('--root', type='str', default='./', help='project root')
+    parser.add_argument('--root', type=str, default='./', help='project root')
     parser.add_argument('--class_num', type=int, help='number of class')
     parser.add_argument('--model_name', type=str, help='model name to train : vgg11_bn, three_layer_cnn, ...')
     parser.add_argument('--exp_name', type=str, help='exp name')
     args = parser.parse_args()
     print(args)
     
-    train_with_distilled(args.dataset, args.class_num, args.root, args.exp_name, args.model_name)
+    train_with_distilled(args.dataset, args.class_num, args.root, args.exp_name, args.epochs, args.model_name)
     
