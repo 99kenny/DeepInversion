@@ -70,9 +70,8 @@ def run(args):
     from deep_inversion import DeepInversion
     
     exp_name = args.exp_name
-    adi_data_path = "./final_images/{}".format(exp_name)
-    exp_name = "generations/{}".format(exp_name)
-    
+    adi_data_path = "{}/results/final_images/{}".format(args.path, exp_name)
+    best_path = "{}/results/best_images/{}".format(args.path, exp_name)
     hook_for_display = lambda x,y: validate_one(x,y, student)
     criterion = nn.CrossEntropyLoss()
     DeepInversionEngine = DeepInversion(class_num=args.class_num,
@@ -80,6 +79,7 @@ def run(args):
                   seed=args.seed,
                   bs=args.bs,
                   use_fp16=args.use_fp16,
+                  path=best_path,
                   final_data_path=adi_data_path,
                   jitter=args.jitter,
                   criterion=criterion,
@@ -102,6 +102,7 @@ def run(args):
     if args.targets is not None:
         targets = [eval(i) for i in args.targets.split(',')]
     DeepInversionEngine.generate_batch(net_student=student, targets=targets)
+    # train simple model for accuracy test on distilled dataset
     
 def main():
     return 
@@ -135,6 +136,7 @@ if __name__ == '__main__':
     parser.add_argument('--image_resolution', type=int, default=224, help='image resolution')
     parser.add_argument('--targets', type=str, help='targets')
     parser.add_argument('--dataset', type=str, default='ImageNet', help='dataset')
+    parser.add_argument('--path', type=str, default='', help='results path')
     args = parser.parse_args()
     print(args)
     

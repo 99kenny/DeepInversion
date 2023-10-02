@@ -108,12 +108,9 @@ class DeepInversion(object):
         
         self.num_generation = 0
         self.final_data_path = final_data_path
+        self.best_path = path
         
-        prefix = path
-        self.prefix = prefix
-        
-        create_folder(prefix)
-        create_folder(prefix + "/best_images/")
+        create_folder(self.best_path)
         create_folder(self.final_data_path)
         
         self.loss_r_feature_layers = []
@@ -135,9 +132,7 @@ class DeepInversion(object):
                                                                                           self.num_generation, id,
                                                                                           local_rank)
             else:
-                place_to_store = '{}/img_s{:03d}_{:05d}_id{:03d}_gpu_{}_2.jpg'.format(self.final_data_path, class_id,
-                                                                                          self.num_generation, id,
-                                                                                          local_rank)
+                place_to_store = '{}/{}_id{:03d}.jpg'.format(self.final_data_path, class_id, id)
 
             image_np = images[id].data.cpu().numpy().transpose((1, 2, 0))
             pil_image = Image.fromarray((image_np * 255).astype(np.uint8))
@@ -295,7 +290,7 @@ class DeepInversion(object):
                 
                 if iteration % save_every == 0 and (save_every > 0):
                     vutils.save_image(inputs, 
-                                    '{}/best_images/output_{:05d}.png'.format(self.prefix, iteration // save_every),
+                                    '{}/output_{:05d}.png'.format(self.best_path,iteration // save_every),
                                     normalize = True, scale_each = True, nrow=int(10))
         
         if self.store_best_images:
