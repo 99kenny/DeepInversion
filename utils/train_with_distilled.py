@@ -155,4 +155,10 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', type=int, default=10, help='epochs')
     parser.add_argument('--dataset', type=str, default='CIFAR10', help='dataset')
     parser.add_argument('--root', type='str', help='dataset root')
+    parser.add_argument('--class_num', type=int, help='number of class')
+    parser.add_argument('--model_name', type=str, help='model name to train : vgg11_bn, three_layer_cnn, ...')
+    args = parser.parse_args()
+    print(args)
+    
+    train_with_distilled(args.dataset, args.class_num, args.root, args.model_name)
     
