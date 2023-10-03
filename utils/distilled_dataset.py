@@ -16,7 +16,7 @@ class DistilledDataset(Dataset):
         for image in os.listdir(path):
             file = os.path.join(path, image)
             if os.path.isfile(file):
-                real_id = ast.literal_eval(image.split('_'[0]))
+                real_id = ast.literal_eval(image.split('_')[0])
                 if real_id not in self.class_id:
                     self.class_id[real_id] = cls
                     cls += 1
