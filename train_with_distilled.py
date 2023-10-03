@@ -125,16 +125,17 @@ def train_with_distilled(dataset_name, class_num, root, exp_name, epochs, model_
     )
     dataset_path = "{}/data".format(root)
     # test set
-    if dataset_name == 'CIFAR10':
-        test_transform = transforms.Compose([
+    test_transform = transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                         std=[0.229, 0.224, 0.225]),
-        ])
+    ])
+
+    if dataset_name == 'CIFAR10':
         test_data = datasets.CIFAR10(root=dataset_path, 
-                                     train=False, 
-                                     download=True, 
-                                     transform=test_transform)
+                                train=False, 
+                                download=True, 
+                                transform=test_transform)
     elif dataset_name == 'ImageNet':
         test_data = datasets.ImageNet(root=dataset_path, 
                                       split='val', 
@@ -150,7 +151,7 @@ def train_with_distilled(dataset_name, class_num, root, exp_name, epochs, model_
         num_workers=2,
         pin_memory=True)
     
-    log_path = "{}/logs/{}/{}/{}".format(root, dataset_name, exp_name, model_name)
+    log_path = "{root}/logs/{dataset_name}/{exp_name}/{model_name}"
     # writer
     writer = SummaryWriter(log_path, filename_suffix=datetime.now().strftime('%Y%m%d-%H%M'))
     
@@ -163,7 +164,7 @@ def train_with_distilled(dataset_name, class_num, root, exp_name, epochs, model_
     
     best_prec1 = 0.
     for epoch in range(0, epochs):
-        print('current lr {:.5e}'.format(optimizer.param_groups[0]['lr']))
+        print("current lr {optimizer.param_groups[0]['lr']:.5e}")
         train(train_loader, model, criterion, optimizer, epoch, writer)
         lr_scheduler.step()
         prec1 = validate(val_loader, model, criterion, epoch, writer)
