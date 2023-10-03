@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
-from torchvision import datasets
-from torchvision.transforms import ToTensor
-from torchvision import models 
+from torchvision import datasets, transforms, models
 from models import vgg
 from utils.distilled_dataset import DistilledDataset
 from torch.utils.tensorboard import SummaryWriter
@@ -110,7 +108,14 @@ def train_with_distilled(dataset_name, class_num, root, exp_name, epochs, model_
     
     distilled_path = "{}/results/final_images/{}".format(root,exp_name)
     # train set
-    train_data = DistilledDataset(distilled_path, transform=ToTensor())
+    train_transform = transforms.Compose([
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomCrop(32, 4),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                      std=[0.229, 0.224, 0.225]),
+    ])
+    train_data = DistilledDataset(distilled_path, transform=train_transform)
     train_loader = DataLoader(
         train_data,
         batch_size=10,
@@ -121,9 +126,23 @@ def train_with_distilled(dataset_name, class_num, root, exp_name, epochs, model_
     dataset_path = "{}/data".format(root)
     # test set
     if dataset_name == 'CIFAR10':
-        test_data = datasets.CIFAR10(root=dataset_path, train=False, download=True, transform=ToTensor())
+        test_transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                        std=[0.229, 0.224, 0.225]),
+        ])
+        test_data = datasets.CIFAR10(root=dataset_path, 
+                                     train=False, 
+                                     download=True, 
+                                     transform=test_transform)
+    elif dataset_name == 'ImageNet':
+        test_data = datasets.ImageNet(root=dataset_path, 
+                                      split='val', 
+                                      download=True, 
+                                      transform=test_transform)
     else:
         raise ValueError('no such dataset')
+
     val_loader = DataLoader(
         test_data,
         batch_size=128,
@@ -136,13 +155,14 @@ def train_with_distilled(dataset_name, class_num, root, exp_name, epochs, model_
     writer = SummaryWriter(log_path, filename_suffix=datetime.now().strftime('%Y%m%d-%H%M'))
     
     # train
+    lr = 0.01
     model.cuda()
     criterion = nn.CrossEntropyLoss(label_smoothing=0).cuda()
-    optimizer = torch.optim.SGD(model.parameters(), 0.1, momentum=0.9, weight_decay=5e-4)
-    lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100, eta_min=0)
+    optimizer = torch.optim.SGD(model.parameters(), lr, momentum=0.9, weight_decay=5e-4)
+    lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs, eta_min=0)
     
     best_prec1 = 0.
-    for epoch in range(0,10):
+    for epoch in range(0, epochs):
         print('current lr {:.5e}'.format(optimizer.param_groups[0]['lr']))
         train(train_loader, model, criterion, optimizer, epoch, writer)
         lr_scheduler.step()
