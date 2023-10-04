@@ -103,7 +103,7 @@ def run(args):
         targets = [eval(i) for i in args.targets.split(',')]
     
     if args.knowledge_distillation:
-        for epoch in range(100):
+        for epoch in range(args.epochs):
             DeepInversionEngine.generate_batch(net_student=student, targets=targets)
     # train simple model for accuracy test on distilled dataset
 
@@ -121,7 +121,8 @@ if __name__ == '__main__':
     
     parser.add_argument('--class_num', type=int, help='total number of classes in the dataset')
     parser.add_argument('--store_best_images', action='store_true', help='save best images as separate files')
-    parser.add_argument('--epochs', type=int, default=2000, help="iterations")
+    parser.add_argument('--iterations', type=int, default=2000, help="iterations")
+    parser.add_argument('--epochs', type=int, default=100, help="epochs")
     parser.add_argument('--setting_id', type=int, default=0, help="multi resolution : 0, else")
     parser.add_argument('--bs', type=int, default=128, help='batch size')
     parser.add_argument('--jitter', type=int, default=30, help='jitter')
