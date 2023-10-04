@@ -7,13 +7,13 @@
 # Hoiem, Niraj K. Jha, and Jan Kautz
 # --------------------------------------------------------
 
+import random
+import collections
 import torch
 import torch.nn
 import torch.optim as optim
-import random
 import torch.cuda.amp as amp
 import torchvision.utils as vutils
-import collections
 from PIL import Image 
 
 from utils.utils import *
@@ -132,7 +132,7 @@ class DeepInversion(object):
                                                                                           self.num_generation, id,
                                                                                           local_rank)
             else:
-                place_to_store = '{}/{}_id{:03d}.jpg'.format(self.final_data_path, class_id, id)
+                place_to_store = '{self.final_data_path}/{class_id}_{self.num_generation}_id{id:03d}.jpg'
 
             image_np = images[id].data.cpu().numpy().transpose((1, 2, 0))
             pil_image = Image.fromarray((image_np * 255).astype(np.uint8))

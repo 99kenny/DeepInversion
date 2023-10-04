@@ -1,13 +1,16 @@
+import argparse
 import torch
 import torch.nn as nn
 from torchvision import datasets, transforms, models
-from models import vgg
-from utils.distilled_dataset import DistilledDataset
 from torch.utils.tensorboard import SummaryWriter
 from torch.utils.data import DataLoader
 from datetime import datetime
 import argparse
 from models.multi_layer_cnn import MultiLayerCNN
+
+from models import vgg
+
+from utils.distilled_dataset import DistilledDataset
 def train(train_loader, model, criterion, optimizer, epoch, writer):
     losses = 0.
     accs = 0.
@@ -40,8 +43,7 @@ def train(train_loader, model, criterion, optimizer, epoch, writer):
         accs += acc
     accs /= len(train_loader)
     losses /= len(train_loader)
-    print('[Epoch {epoch}] Average Loss : {loss:.3f}, Average Accuracy : {acc:.3f}'
-          .format(epoch = epoch , loss=losses, acc=accs))
+    print('[Epoch {epoch}] Average Loss : {losses:.3f}, Average Accuracy : {accs:.3f}')
 
     writer.add_scalar("Loss/train", losses, epoch)
     writer.add_scalar("Accuracy/train", accs, epoch)
@@ -73,8 +75,7 @@ def validate(val_loader, model, criterion, epoch, writer):
 
         losses /= len(val_loader)
         accs /= len(val_loader)
-        print('[Validation] : Average Loss {loss:.3f}, Average Accuracy {acc:.3f}'
-            .format(loss=losses, acc=accs))
+        print('[Validation] : Average Loss {losses:.3f}, Average Accuracy {accs:.3f}')
 
         writer.add_scalar("Loss/val", losses, epoch)
         writer.add_scalar("Accuracy/val", accs, epoch)
@@ -106,7 +107,7 @@ def train_with_distilled(dataset_name, class_num, root, exp_name, epochs, model_
     else:
         model = models.__dict__[model_name]()
     
-    distilled_path = "{}/results/final_images/{}".format(root,exp_name)
+    distilled_path = "{root}/results/final_images/{exp_name}"
     # train set
     train_transform = transforms.Compose([
         transforms.RandomHorizontalFlip(),
@@ -123,7 +124,7 @@ def train_with_distilled(dataset_name, class_num, root, exp_name, epochs, model_
         num_workers=2,
         pin_memory=True
     )
-    dataset_path = "{}/data".format(root)
+    dataset_path = "{root}/data"
     # test set
     test_transform = transforms.Compose([
             transforms.ToTensor(),
@@ -186,5 +187,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(args)
     
-    train_with_distilled(args.dataset, args.class_num, args.root, args.exp_name, args.epochs, args.model_name)
+    train_with_distilled(args.dataset, 
+                         args.class_num, 
+                         args.root, 
+                         args.exp_name, 
+                         args.epochs, 
+                         args.model_name)
     

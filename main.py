@@ -101,11 +101,11 @@ def run(args):
     targets = None
     if args.targets is not None:
         targets = [eval(i) for i in args.targets.split(',')]
-    DeepInversionEngine.generate_batch(net_student=student, targets=targets)
-    # train simple model for accuracy test on distilled dataset
     
-def main():
-    return 
+    if args.knowledge_distillation:
+        for epoch in range(100):
+            DeepInversionEngine.generate_batch(net_student=student, targets=targets)
+    # train simple model for accuracy test on distilled dataset
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -137,11 +137,10 @@ if __name__ == '__main__':
     parser.add_argument('--targets', type=str, help='targets')
     parser.add_argument('--dataset', type=str, default='ImageNet', help='dataset')
     parser.add_argument('--path', type=str, default='', help='results path')
+    parser.add_argument('--knowledge_distillation', action='store_true', help='knowledge distillation')
     args = parser.parse_args()
     print(args)
     
     torch.backends.cudnn.benchmark = True
     run(args)
     
-if __name__ == '__main__':
-    main()
