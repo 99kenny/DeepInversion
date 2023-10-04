@@ -12,7 +12,7 @@ class DistilledDataset(Dataset):
         self.transform = transform
         self.class_id = {}
         cls = 0
-        print('Loading distilled datasets from {path} ...')
+        print(f'Loading distilled datasets from {path} ...')
         for image in os.listdir(path):
             file = os.path.join(path, image)
             if os.path.isfile(file):

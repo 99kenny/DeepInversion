@@ -128,11 +128,9 @@ class DeepInversion(object):
             class_id = targets[id].item()
             if 0:
                 #save into separate folders
-                place_to_store = '{}/s{:03d}/img_{:05d}_id{:03d}_gpu_{}_2.jpg'.format(self.final_data_path, class_id,
-                                                                                          self.num_generation, id,
-                                                                                          local_rank)
+                place_to_store = f'{self.final_data_path}/s{class_id:03d}/img_{self.num_generation:05d}_id{id:03d}_gpu_{local_rank}_2.jpg'
             else:
-                place_to_store = '{self.final_data_path}/{class_id}_{self.num_generation}_id{id:03d}.jpg'
+                place_to_store = f'{self.final_data_path}/{class_id}_{self.num_generation}_id{id:03d}.jpg'
 
             image_np = images[id].data.cpu().numpy().transpose((1, 2, 0))
             pil_image = Image.fromarray((image_np * 255).astype(np.uint8))
@@ -265,7 +263,7 @@ class DeepInversion(object):
                 loss = loss_aux
                 
                 if iteration % save_every == 0:
-                    print("------------iteration {}----------".format(iteration))
+                    print(f"------------iteration {iteration}----------")
                     print("total loss", loss.item())
                     print("loss_r_feature", loss_r_feature.item())
                     print("main criterion", criterion(outputs, targets).item())
@@ -290,7 +288,7 @@ class DeepInversion(object):
                 
                 if iteration % save_every == 0 and (save_every > 0):
                     vutils.save_image(inputs, 
-                                    '{}/output_{:05d}.png'.format(self.best_path,iteration // save_every),
+                                    f'{self.best_path}/output_{(iteration//save_every):05d}.png',
                                     normalize = True, scale_each = True, nrow=int(10))
         
         if self.store_best_images:

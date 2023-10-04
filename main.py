@@ -35,7 +35,7 @@ def select_models(dataset, name, path):
         if name == 'vgg11_bn':
             features = [64, 64, 128, 128, 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M']
             model = torch.nn.DataParallel(vgg.VggNet(features))
-            model.load_state_dict(torch.load('{path}/path/vgg.pth'))
+            model.load_state_dict(torch.load(f'{path}/path/vgg.pth'))
             
             
     else:
@@ -47,13 +47,13 @@ def run(args):
     torch.manual_seed(args.seed)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
-    print('loading torchvision model for teacher with the name {}'.format(args.teacher))
+    print(f'loading torchvision model for teacher with the name {args.teacher}')
     teacher = select_models(args.dataset, args.teacher, args.path).to('cuda')
     teacher.eval()
     if args.use_fp16:
         teacher, _ = amp.initialize(teacher, [], opt_level='O2')
             
-    print('loading torchvision model for student with the name {}'.format(args.student))
+    print(f'loading torchvision model for student with the name {args.student}')
     student = select_models(args.dataset, args.student, args.path).to('cuda')
     student.eval()
         
@@ -70,8 +70,8 @@ def run(args):
     from deep_inversion import DeepInversion
     
     exp_name = args.exp_name
-    adi_data_path = "{}/results/final_images/{}".format(args.path, exp_name)
-    best_path = "{}/results/best_images/{}".format(args.path, exp_name)
+    adi_data_path = f"{args.path}/results/final_images/{exp_name}"
+    best_path = "{args.path}/results/best_images/{exp_name}"
     hook_for_display = lambda x,y: validate_one(x,y, student)
     criterion = nn.CrossEntropyLoss()
     DeepInversionEngine = DeepInversion(class_num=args.class_num,
@@ -104,6 +104,7 @@ def run(args):
     
     if args.knowledge_distillation:
         for epoch in range(args.epochs):
+            print(f'Epoch[{epoch}]')
             DeepInversionEngine.generate_batch(net_student=student, targets=targets)
     # train simple model for accuracy test on distilled dataset
 

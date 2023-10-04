@@ -43,7 +43,7 @@ def train(train_loader, model, criterion, optimizer, epoch, writer):
         accs += acc
     accs /= len(train_loader)
     losses /= len(train_loader)
-    print('[Epoch {epoch}] Average Loss : {losses:.3f}, Average Accuracy : {accs:.3f}')
+    print(f'[Epoch {epoch}] Average Loss : {losses:.3f}, Average Accuracy : {accs:.3f}')
 
     writer.add_scalar("Loss/train", losses, epoch)
     writer.add_scalar("Accuracy/train", accs, epoch)
@@ -75,7 +75,7 @@ def validate(val_loader, model, criterion, epoch, writer):
 
         losses /= len(val_loader)
         accs /= len(val_loader)
-        print('[Validation] : Average Loss {losses:.3f}, Average Accuracy {accs:.3f}')
+        print(f'[Validation] : Average Loss {losses:.3f}, Average Accuracy {accs:.3f}')
 
         writer.add_scalar("Loss/val", losses, epoch)
         writer.add_scalar("Accuracy/val", accs, epoch)
@@ -107,7 +107,7 @@ def train_with_distilled(dataset_name, class_num, root, exp_name, epochs, model_
     else:
         model = models.__dict__[model_name]()
     
-    distilled_path = "{root}/results/final_images/{exp_name}"
+    distilled_path = f"{root}/results/final_images/{exp_name}"
     # train set
     train_transform = transforms.Compose([
         transforms.RandomHorizontalFlip(),
@@ -124,7 +124,7 @@ def train_with_distilled(dataset_name, class_num, root, exp_name, epochs, model_
         num_workers=2,
         pin_memory=True
     )
-    dataset_path = "{root}/data"
+    dataset_path = f"{root}/data"
     # test set
     test_transform = transforms.Compose([
             transforms.ToTensor(),
@@ -152,7 +152,7 @@ def train_with_distilled(dataset_name, class_num, root, exp_name, epochs, model_
         num_workers=2,
         pin_memory=True)
     
-    log_path = "{root}/logs/{dataset_name}/{exp_name}/{model_name}"
+    log_path = f"{root}/logs/{dataset_name}/{exp_name}/{model_name}"
     # writer
     writer = SummaryWriter(log_path, filename_suffix=datetime.now().strftime('%Y%m%d-%H%M'))
     
@@ -165,7 +165,7 @@ def train_with_distilled(dataset_name, class_num, root, exp_name, epochs, model_
     
     best_prec1 = 0.
     for epoch in range(0, epochs):
-        print("current lr {optimizer.param_groups[0]['lr']:.5e}")
+        print(f"current lr {optimizer.param_groups[0]['lr']:.5e}")
         train(train_loader, model, criterion, optimizer, epoch, writer)
         lr_scheduler.step()
         prec1 = validate(val_loader, model, criterion, epoch, writer)
