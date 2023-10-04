@@ -106,8 +106,10 @@ def run(args):
         for epoch in range(args.epochs):
             print(f'Epoch[{epoch}]')
             DeepInversionEngine.generate_batch(net_student=student, targets=targets)
+    else:
+        DeepInversionEngine.generate_batch(net_student=student, targets=targets)
     # train simple model for accuracy test on distilled dataset
-
+    
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # bs, seed, net_teacher, fp_16, 
