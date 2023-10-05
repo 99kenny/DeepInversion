@@ -1,7 +1,7 @@
 import torch.nn as nn
 
 class MultiLayerCNN(nn.Module):
-    def __init__(self, num_class, features=[16,'M',16,16], drop=0.):
+    def __init__(self, num_class, features=[16,'M',16,16], drop=0.5):
         super().__init__()
         self.classifier = nn.Sequential(
             nn.Dropout(p=drop),
@@ -17,7 +17,8 @@ class MultiLayerCNN(nn.Module):
                 self.layers += [
                     nn.Conv2d(in_channel, i, kernel_size=3, padding=1),
                     nn.BatchNorm2d(i),
-                    nn.ReLU(inplace=True)
+                    nn.ReLU(inplace=True),
+                    nn.Dropout(p=drop)
                 ]
                 in_channel = i
         self.layers = nn.Sequential(*self.layers)

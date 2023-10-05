@@ -119,7 +119,7 @@ def train_with_distilled(dataset_name, class_num, root, exp_name, epochs, model_
     train_data = DistilledDataset(distilled_path, transform=train_transform)
     train_loader = DataLoader(
         train_data,
-        batch_size=10,
+        batch_size=128,
         shuffle=True,
         num_workers=2,
         pin_memory=True
