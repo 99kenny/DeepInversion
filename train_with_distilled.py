@@ -9,8 +9,8 @@ import argparse
 from models.multi_layer_cnn import MultiLayerCNN
 
 from models import vgg
-
 from utils.distilled_dataset import DistilledDataset
+
 def train(train_loader, model, criterion, optimizer, epoch, writer):
     losses = 0.
     accs = 0.

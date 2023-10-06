@@ -74,7 +74,8 @@ class DeepInversion(object):
                  lr = 0.2,
                  l2 = 0.00001,
                  main_loss_multiplier = 1.0,
-                 adi_scale = 0.0
+                 adi_scale = 0.0,
+                 train_dataset=None,
                  ):
         
         torch.manual_seed(seed)
@@ -109,7 +110,7 @@ class DeepInversion(object):
         self.num_generation = 0
         self.final_data_path = final_data_path
         self.best_path = path
-        
+        self.train_dataset = train_dataset
         create_folder(self.best_path)
         create_folder(self.final_data_path)
         
@@ -147,12 +148,24 @@ class DeepInversion(object):
         criterion = self.criterion
         image_resolution = self.image_resolution
         data_type = torch.half if use_fp16 else torch.float
-        inputs = torch.randn((self.bs, 3, image_resolution, image_resolution), requires_grad=True, device='cuda', dtype=data_type)
+        train_dataset = self.train_dataset
         pooling_function = nn.modules.pooling.AvgPool2d(kernel_size=2)
         
         if targets is None or self.random_label :
             targets = torch.LongTensor([random.randint(0,class_num) for _ in range(self.bs)]).to('cuda')
+                
+        if train_dataset is None:
+            inputs = torch.randn((self.bs, 3, image_resolution, image_resolution), requires_grad=True, device='cuda', dtype=data_type)
+        else:
+            inputs = torch.Tensor()
+            # choose target image
+            for index, target in enumerate(targets):
+                idx = train_dataset.targets == target
+                inputs = torch.cat(inputs,torch.unsqueeze(train_dataset.data[idx][random.choice(range(len(idx)))],0))
+        
+        targets = targets.type(torch.LongTensor).to('cuda')
 
+        
         # multi resolution
         if self.setting_id == 0:
             skipFirst = False

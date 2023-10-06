@@ -2,6 +2,7 @@ import argparse
 import torch
 import torch.nn as nn
 import torchvision.models as models
+import torchvision.transforms as transforms
 import torch.cuda.amp as amp
 import requests
 
@@ -68,7 +69,14 @@ def run(args):
                 module.eval().half()
     
     from deep_inversion import DeepInversion
-    
+    train_dataset = None
+    if args.from_training_:
+        import torchvision.datasets as datasets
+        train_dataset = datasets.CIFAR10(root=f'{args.path}/data', 
+                                train=True, 
+                                download=True, 
+                                transform=transforms.ToTensor())
+        
     exp_name = args.exp_name
     adi_data_path = f"{args.path}/results/final_images/{exp_name}"
     best_path = "{args.path}/results/best_images/{exp_name}"
@@ -97,6 +105,7 @@ def run(args):
                   main_loss_multiplier=args.main_loss_multiplier,
                   adi_scale=args.adi_scale,
                   setting_id=args.setting_id,
+                  train_dataset=train_dataset,
                 )
     targets = None
     if args.targets is not None:
@@ -142,6 +151,7 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', type=str, default='ImageNet', help='dataset')
     parser.add_argument('--path', type=str, default='', help='results path')
     parser.add_argument('--knowledge_distillation', action='store_true', help='knowledge distillation')
+    parser.add_argument('--from_training', action='store_true', help='from training set')
     args = parser.parse_args()
     print(args)
     
