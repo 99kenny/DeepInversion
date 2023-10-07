@@ -70,7 +70,7 @@ def run(args):
     
     from deep_inversion import DeepInversion
     train_dataset = None
-    if args.from_training_:
+    if args.from_training:
         import torchvision.datasets as datasets
         train_dataset = datasets.CIFAR10(root=f'{args.path}/data', 
                                 train=True, 
@@ -79,7 +79,7 @@ def run(args):
         
     exp_name = args.exp_name
     adi_data_path = f"{args.path}/results/final_images/{exp_name}"
-    best_path = "{args.path}/results/best_images/{exp_name}"
+    best_path = f"{args.path}/results/best_images/{exp_name}"
     hook_for_display = lambda x,y: validate_one(x,y, student)
     criterion = nn.CrossEntropyLoss()
     DeepInversionEngine = DeepInversion(class_num=args.class_num,

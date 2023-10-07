@@ -160,8 +160,11 @@ class DeepInversion(object):
             inputs = torch.Tensor()
             # choose target image
             for index, target in enumerate(targets):
-                idx = train_dataset.targets == target
-                inputs = torch.cat(inputs,torch.unsqueeze(train_dataset.data[idx][random.choice(range(len(idx)))],0))
+                idx = []
+                for i in train_dataset.targets:
+                    if i == target:
+                        idx.append(i)
+                inputs = torch.cat((inputs,torch.unsqueeze(train_dataset.__getitem__(random.choice(range(len(idx)))),0)))
         
         targets = targets.type(torch.LongTensor).to('cuda')
 
