@@ -11,17 +11,18 @@ from models.multi_layer_cnn import MultiLayerCNN
 from models import vgg
 from utils.distilled_dataset import DistilledDataset
 
-def train(train_loader, model, criterion, optimizer, epoch, writer):
+def train(train_loader, model, criterion, optimizer, epoch, writer, teacher):
     losses = 0.
     accs = 0.
 
     # switch to train mode
     model.train()
 
-    for i, (input, target) in enumerate(train_loader):
-
+    for i, (input, target) in enumerate(train_loader):           
         target = target.cuda()
         input_var = input.cuda()
+        if teacher is not None:
+            target = teacher(input_var)
         target_var = target
 
         # compute output
@@ -97,7 +98,7 @@ def accuracy(output, target, topk=(1,)):
         res.append(correct_k.mul_(100.0 / batch_size))
     return res
 
-def train_with_distilled(dataset_name, class_num, root, exp_name, epochs, model_name='vgg11_bn'):
+def train_with_distilled(dataset_name, class_num, root, exp_name, epochs, model_name='vgg11_bn', knowledge_transfer=False):
     # model
     if model_name == 'vgg11_bn':
         features = [64, 64, 128, 128, 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M']
@@ -106,7 +107,11 @@ def train_with_distilled(dataset_name, class_num, root, exp_name, epochs, model_
         model = MultiLayerCNN(class_num)
     else:
         model = models.__dict__[model_name]()
-    
+    teacher = None
+    if knowledge_transfer:
+        teacher = torch.nn.DataParallel(vgg.VggNet(features))
+        teacher.load_state_dict(torch.load(f'{root}/path/vgg.pth'))
+        teacher.cuda()
     distilled_path = f"{root}/results/final_images/{exp_name}"
     # train set
     train_transform = transforms.Compose([
@@ -166,7 +171,9 @@ def train_with_distilled(dataset_name, class_num, root, exp_name, epochs, model_
     best_prec1 = 0.
     for epoch in range(0, epochs):
         print(f"current lr {optimizer.param_groups[0]['lr']:.5e}")
-        train(train_loader, model, criterion, optimizer, epoch, writer)
+
+        train(train_loader, model, criterion, optimizer, epoch, writer, teacher)
+        
         lr_scheduler.step()
         prec1 = validate(val_loader, model, criterion, epoch, writer)
         
@@ -184,6 +191,7 @@ if __name__ == '__main__':
     parser.add_argument('--class_num', type=int, help='number of class')
     parser.add_argument('--model_name', type=str, help='model name to train : vgg11_bn, three_layer_cnn, ...')
     parser.add_argument('--exp_name', type=str, help='exp name')
+    parser.add_argument('--knowledge_transfer', action='store_true', help='Use knowledge distillation to train student')
     args = parser.parse_args()
     print(args)
     
@@ -192,5 +200,6 @@ if __name__ == '__main__':
                          args.root, 
                          args.exp_name, 
                          args.epochs, 
-                         args.model_name)
+                         args.model_name,
+                         args.knowledge_transfer)
     
