@@ -164,7 +164,7 @@ class DeepInversion(object):
                 for i in train_dataset.targets:
                     if i == target:
                         idx.append(i)
-                inputs = torch.cat((inputs,torch.unsqueeze(train_dataset.__getitem__(random.choice(range(len(idx)))),0)))
+                inputs = torch.cat((inputs,torch.unsqueeze(train_dataset.__getitem__(random.choice(range(len(idx))))[0],0)))
         
         targets = targets.type(torch.LongTensor).to('cuda')
 
