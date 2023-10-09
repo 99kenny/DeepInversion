@@ -157,7 +157,7 @@ class DeepInversion(object):
         if train_dataset is None:
             inputs = torch.randn((self.bs, 3, image_resolution, image_resolution), requires_grad=True, device='cuda', dtype=data_type)
         else:
-            inputs = torch.Tensor()
+            inputs = torch.Tensor().cuda()
             # choose target image
             for index, target in enumerate(targets):
                 idx = []
