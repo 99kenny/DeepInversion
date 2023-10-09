@@ -21,8 +21,10 @@ def train(train_loader, model, criterion, optimizer, epoch, writer, teacher):
     for i, (input, target) in enumerate(train_loader):           
         target = target.cuda()
         input_var = input.cuda()
+        soft_target = False
         if teacher is not None:
-            target = teacher(input_var)
+            soft_target = True
+            target = teacher(input_var).softmax(dim=1)
         target_var = target
 
         # compute output
@@ -39,7 +41,7 @@ def train(train_loader, model, criterion, optimizer, epoch, writer, teacher):
         loss = loss.float()
 
         # measure accuracy and record loss
-        acc = accuracy(output.data, target)[0]
+        acc = accuracy(output.data, target, soft_target)[0]
         losses += loss.item()
         accs += acc
     accs /= len(train_loader)
@@ -84,11 +86,13 @@ def validate(val_loader, model, criterion, epoch, writer):
     return accs
 
 # top k accuacry
-def accuracy(output, target, topk=(1,)):
+def accuracy(output, target, soft_target,topk=(1,)):
     maxk = max(topk)
     batch_size = target.size(0)
 
     _, pred = output.topk(maxk, 1, True, True)
+    if soft_target:
+        _, target = target.topk(1, 1, True, True)
     pred = pred.t()
     correct = pred.eq(target.view(1, -1).expand_as(pred))
 
