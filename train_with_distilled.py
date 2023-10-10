@@ -72,7 +72,7 @@ def validate(val_loader, model, criterion, epoch, writer):
             loss = loss.float()
 
             # measure accuracy and record loss
-            prec1 = accuracy(output.data, target)[0]
+            prec1 = accuracy(output.data, target, False)[0]
             losses += loss.item()
             accs += prec1.item()
 
